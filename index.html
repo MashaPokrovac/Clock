@@ -1,0 +1,142 @@
+c<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clock</title>
+
+    <style>
+      * {
+        margin: 0 auto;
+        padding: 0;
+      }
+      canvas {
+        background-image: black;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+
+    <script>
+      const canvas = document.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const width = (canvas.width = window.innerWidth);
+      const height = (canvas.height = window.innerHeight);
+
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      const bigTick = 20;
+      const r = 200;
+
+      function degToRad(degrees) {
+        return (degrees * Math.PI) / 180;
+      }
+
+      function draw_ticks() {
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 0;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 200, degToRad(0), degToRad(360), false);
+        ctx.stroke();
+
+        for (var i = 0; i < 360; i = i + 30) {
+          var x = r * Math.cos(degToRad(i));
+          var y = r * Math.sin(degToRad(i));
+
+          var tickStartX = (r - bigTick / 2) * Math.cos(degToRad(i));
+          var tickStartY = (r - bigTick / 2) * Math.sin(degToRad(i));
+          var tickEndX = (r + bigTick / 2) * Math.cos(degToRad(i));
+          var tickEndY = (r + bigTick / 2) * Math.sin(degToRad(i));
+
+          ctx.strokeStyle = "rgb(192,192,192)";
+          ctx.lineWidth = "3";
+
+          ctx.beginPath();
+          ctx.moveTo(centerX + tickStartX, centerY + tickStartY);
+          ctx.lineTo(centerX + tickEndX, centerY + tickEndY);
+          ctx.stroke();
+        }
+      }
+
+      function hours_clockwise() {
+        const currentTime = new Date();
+        const hours = currentTime.getHours();
+        const minutes = currentTime.getMinutes();
+        const seconds = currentTime.getSeconds();
+
+        const angle_h = 30 * (hours % 12) + minutes / 2;
+
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = "6";
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(
+          centerX + (r - 90) * Math.cos(degToRad(angle_h - 90)),
+          centerY + (r - 90) * Math.sin(degToRad(angle_h - 90))
+        );
+        ctx.stroke();
+      }
+
+      //oduzela sam 90 jer sam racunala u polarnom kordinatnom sustavu
+
+      function minutes_clockwise() {
+        const currentTime = new Date();
+        const hours = currentTime.getHours();
+        const minutes = currentTime.getMinutes();
+        const seconds = currentTime.getSeconds();
+
+        const angle_min = minutes * 6 + seconds* 0.1;
+
+        ctx.strokeStyle = "rgb(200, 43, 212)";
+        ctx.lineWidth = "3";
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(
+          centerX + (r - 50) * Math.cos(degToRad(angle_min - 90)),
+          centerY + (r - 50) * Math.sin(degToRad(angle_min - 90))
+        );
+        ctx.stroke();
+      }
+
+      function seconds_clockwise() {
+        const currentTime = new Date();
+        const seconds = currentTime.getSeconds();
+        const miliseconds = currentTime.getMilliseconds();
+
+        const angle_sec = seconds * 6 +  0.006 * miliseconds;
+
+        ctx.strokeStyle = "rgb(55, 212, 43)";
+        ctx.lineWidth = "1";
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(
+          centerX + (r - 20) * Math.cos(degToRad(angle_sec - 90)),
+          centerY + (r - 20) * Math.sin(degToRad(angle_sec- 90))
+        );
+        ctx.stroke();
+      }
+
+      function cleanDesplay() {
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      function displayClock() {
+        cleanDesplay();
+        draw_ticks();
+        hours_clockwise();
+        minutes_clockwise();
+        seconds_clockwise();
+      }
+
+      setInterval(displayClock, 30);
+    </script>
+  </body>
+</html>
